@@ -1,0 +1,36 @@
+# Environments
+.env
+.env.*
+!.env.example
+
+# Kaggle / Secrets
+kaggle.json
+*.pem
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data and Models
+data/
+*.csv
+!model/test_predictions.csv
+*.png
+!dashboard_preview.png
+!docs/screenshots/*.png
+*.jpg
+*.zip
+
+# Next.js
+.next/
+out/
+build/
+.vercel
+
+# Editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
