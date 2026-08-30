@@ -23,42 +23,34 @@ The system heavily adheres to a modern decoupling structure:
 ### 1. Overall Risk Grade
 A composite grading engine merging model precision, recall capability, model drift integrity, and environmental spike volatility into a single, highly readable health heuristic.
 
-![Overall Risk Grade](docs/screenshots/07-risk-grade.png)
 
 ### 2. Live Fraud Timeline
 Operates by bucketing high-volume transactions into 10-minute micro-intervals, aggressively calculating rolling bounds. It physically raises Z-score alert flags the exact second volume breaks strict statistical boundaries. 
 
-![Live Fraud Timeline](docs/screenshots/01-timeline.png)
 
 ### 3. Automated Action Simulation
 Whenever analysts select an anomalous spike, the backend calculates the scale of the deviation and simulates precise tiered defense recommendations (e.g., initiating global Step-Up OTP verifications). 
 
-![Automated Action Simulation](docs/screenshots/04-action-simulation.png)
 
 ### 4. Cost-Aware Threshold Tuning
 Enables live sliding of the probability acceptance threshold to dynamically observe the real financial impact of prediction boundaries shifting dynamically against the Confusion Matrix. 
 
-![Cost-Aware Threshold Tuning](docs/screenshots/02-threshold-slider.png)
 
 ### 5. Explainability Panel
 Integrates holistic offline analysis rendering the macro features dominating the model's structure, allowing compliance officers to verify no protected markers govern transaction outcomes.
 
-![Explainability Panel](docs/screenshots/03-explainability.png)
 
 ### 6. Model Drift Monitor
 Compares the Population Stability Index (PSI) distributions spanning training distributions versus raw production ingestion patterns, preventing model degradation before it begins.
 
-![Model Drift Monitor](docs/screenshots/05-drift-monitor.png)
 
 ### 7. Per-Transaction Lookup
 Performs deep-level single-event inspection. Deploys unified SHAP computations mapping exactly which vectors contributed (both positive tracking and negative validation) toward the core ML engine’s final probability yield.
 
-![Per-Transaction Lookup](docs/screenshots/06-transaction-lookup.png)
 
 ### 8. Sign In / Security Gateway
 A seamless client-side verification gate designed purely for isolated role-based rendering contexts (this operates strictly in a cosmetic UI presentation mode for demonstration limits).
 
-![Sign In Presentation](docs/screenshots/08-signin.png)
 
 ---
 
