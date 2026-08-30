@@ -20,6 +20,7 @@ data/
 *.png
 !dashboard_preview.png
 !docs/screenshots/*.png
+!model/*.png
 *.jpg
 *.zip
 

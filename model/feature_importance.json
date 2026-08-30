@@ -1,0 +1,42 @@
+[
+    {
+        "feature": "V14",
+        "importance": 5376.1689453125
+    },
+    {
+        "feature": "V4",
+        "importance": 649.1541137695312
+    },
+    {
+        "feature": "V12",
+        "importance": 323.4450988769531
+    },
+    {
+        "feature": "V8",
+        "importance": 223.593505859375
+    },
+    {
+        "feature": "V20",
+        "importance": 194.5391387939453
+    },
+    {
+        "feature": "Amount",
+        "importance": 173.05862426757812
+    },
+    {
+        "feature": "V19",
+        "importance": 156.88150024414062
+    },
+    {
+        "feature": "V11",
+        "importance": 152.59629821777344
+    },
+    {
+        "feature": "V10",
+        "importance": 143.14015197753906
+    },
+    {
+        "feature": "V7",
+        "importance": 137.71920776367188
+    }
+]
