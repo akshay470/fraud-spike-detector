@@ -176,6 +176,56 @@ def get_drift():
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to read drift report: {e}")
     raise HTTPException(status_code=404, detail="Drift data not found")
+
+@app.get("/risk-grade")
+def get_risk_grade(threshold: float = 0.5):
+    try:
+        # 1. Fetch metrics for recall/precision
+        metrics_data = get_metrics(threshold)
+        recall = metrics_data.get("recall", 0.0) * 100
+        precision = metrics_data.get("precision", 0.0) * 100
+        
+        # 2. Fetch drift
+        drift_score = 100
+        drift_data = get_drift()
+        if drift_data:
+            status = drift_data.get("overall_status", "Stable")
+            if status == "Significant Drift":
+                drift_score = 20
+            elif status == "Moderate Drift":
+                drift_score = 60
+                
+        # 3. Fetch spikes
+        spikes_data = get_spikes()
+        total_windows = len(spikes_data)
+        spike_count = sum(1 for b in spikes_data if b.get("is_spike"))
+        spike_health = 100
+        if total_windows > 0:
+            spike_health = (1.0 - (spike_count / total_windows)) * 100
+
+        # Composite computation
+        final_score = (recall * 0.35) + (precision * 0.25) + (drift_score * 0.25) + (spike_health * 0.15)
+        
+        # Grading
+        if final_score >= 90: grade = 'A'
+        elif final_score >= 75: grade = 'B'
+        elif final_score >= 60: grade = 'C'
+        else: grade = 'D'
+        
+        return {
+            "overall_score": round(final_score, 1),
+            "letter_grade": grade,
+            "breakdown": {
+                "recall": round(recall, 1),
+                "precision": round(precision, 1),
+                "drift_score": drift_score,
+                "spike_health": round(spike_health, 1),
+                "spike_ratio": f"{spike_count}/{total_windows}"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to compute risk grade: {e}")
+
 @app.get("/transaction/{tx_id}")
 def get_transaction_insights(tx_id: int):
     conn = get_db_connection()
