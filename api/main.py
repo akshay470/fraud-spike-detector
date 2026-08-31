@@ -336,3 +336,35 @@ def get_metrics(threshold: Optional[float] = Query(None)):
         }
     finally:
         conn.close()
+
+@app.get("/trends/hourly")
+def get_hourly_trends(threshold: float = 0.5):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        query = """
+            SELECT 
+                CAST(timestamp / 3600 AS INTEGER) %% 24 AS hour,
+                COUNT(*) AS total_transactions,
+                SUM(CASE WHEN predicted_probability >= %s THEN 1 ELSE 0 END) AS fraud_count,
+                ROUND(SUM(CASE WHEN predicted_probability >= %s THEN 1 ELSE 0 END)::numeric / COUNT(*), 4) AS fraud_rate
+            FROM test_predictions
+            GROUP BY hour
+            ORDER BY hour
+        """
+        cur.execute(query, (threshold, threshold))
+        data = cur.fetchall()
+        
+        formatted_data = []
+        for row in data:
+            formatted_data.append({
+                "hour": int(row["hour"]),
+                "fraud_count": int(row["fraud_count"]) if row["fraud_count"] else 0,
+                "fraud_rate": float(row["fraud_rate"]) if row["fraud_rate"] else 0.0,
+                "total_transactions": int(row["total_transactions"])
+            })
+        return formatted_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch hourly trends: {e}")
+    finally:
+        conn.close()

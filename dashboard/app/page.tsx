@@ -9,6 +9,7 @@ import AutomatedSimulationPanel from "@/components/AutomatedSimulationPanel";
 import DriftPanel from "@/components/DriftPanel";
 import TransactionLookupPanel from "@/components/TransactionLookupPanel";
 import RiskGradePanel from "@/components/RiskGradePanel";
+import FraudTrendsChart from "@/components/FraudTrendsChart";
 import Footer from "@/components/Footer";
 
 import { useRouter } from "next/navigation";
@@ -155,6 +156,11 @@ export default function Dashboard() {
             <span className="text-sm text-gray-400 font-medium">💡 Hint: <span className="text-red-400">Red bands</span> = detected fraud spikes. Click a spike for details.</span>
           </div>
           <FraudTimeline onSpikeClick={(spike) => setSelectedSpike(spike)} />
+        </section>
+
+        {/* Analytics: Fraud Trends Chart */}
+        <section className="mb-8 mt-8">
+          <FraudTrendsChart threshold={threshold} />
         </section>
 
         {/* Feature Row: Explainability, Drift, and Auto Simulation */}
