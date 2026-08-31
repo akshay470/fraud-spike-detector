@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [threshold, setThreshold] = useState(0.5);
   const [metricsData, setMetricsData] = useState<any>(null);
   const [selectedSpike, setSelectedSpike] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<"Executive" | "Analyst">("Executive");
   
   const [riskGrade, setRiskGrade] = useState<string | null>(null);
   const [driftStatus, setDriftStatus] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export default function Dashboard() {
   let pulseColor = "bg-gray-400";
   let showPulse = false;
 
-  if (riskGrade && driftStatus) {
+  if (riskGrade) {
     if (riskGrade === "D") {
       systemStatus = "CRITICAL";
       statusColor = "text-red-400 bg-red-900/40 border-red-900/50";
@@ -46,7 +47,7 @@ export default function Dashboard() {
       systemStatus = "SECURE";
       statusColor = "text-emerald-400 bg-emerald-900/40 border-emerald-900/50";
       pulseColor = "bg-emerald-500";
-      showPulse = true;
+      showPulse = false;
     }
   }
   
@@ -107,7 +108,26 @@ export default function Dashboard() {
             
             {userEmail && (
               <div className="flex items-center gap-4 ml-4 pl-4 border-l border-gray-800">
-                <span className="text-sm text-gray-400">
+                <div className="flex bg-gray-900 border border-gray-800 rounded-lg overflow-hidden p-1">
+                  <button 
+                    onClick={() => setViewMode("Executive")}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                      viewMode === "Executive" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                    }`}
+                  >
+                    Executive
+                  </button>
+                  <button 
+                    onClick={() => setViewMode("Analyst")}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                      viewMode === "Analyst" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                    }`}
+                  >
+                    Analyst
+                  </button>
+                </div>
+                
+                <span className="text-sm text-gray-400 ml-2 border-l border-gray-800 pl-4">
                   Signed in as: <span className="text-gray-200 font-medium">{userEmail}</span>
                 </span>
                 <button 
@@ -196,42 +216,46 @@ export default function Dashboard() {
           <FraudTrendsChart threshold={threshold} />
         </section>
 
-        {/* Feature Row: Explainability, Drift, and Auto Simulation */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <ExplainabilityPanel />
-          <DriftPanel onDriftLoaded={setDriftStatus} />
-          <AutomatedSimulationPanel spike={selectedSpike} />
-        </section>
+        {viewMode === "Analyst" && (
+          <>
+            {/* Feature Row: Explainability, Drift, and Auto Simulation */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <ExplainabilityPanel />
+              <DriftPanel onDriftLoaded={setDriftStatus} />
+              <AutomatedSimulationPanel spike={selectedSpike} />
+            </section>
 
-        {/* Bottom: Settings & Metrics */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
-          <div className="lg:col-span-1 space-y-4">
-            <h2 className="text-xl font-semibold text-white mb-2">Defense Controls</h2>
-            <ThresholdSlider threshold={threshold} setThreshold={setThreshold} />
-            <p className="text-xs text-gray-500 italic px-1 pt-1 mb-2">💡 Hint: Drag to see how stricter thresholds trade off precision vs recall.</p>
-            <div className="bg-blue-900/10 border border-blue-900/30 p-4 rounded-xl">
-              <p className="text-sm text-blue-200/80 leading-relaxed">
-                Adjusting the probability threshold updates the confusion matrix live against historical data. 
-                Higher threshold means less false positives, but potentially missing subtle frauds.
-              </p>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold text-white mb-2">Financial Impact & Accuracy Simulator</h2>
-            <MetricsPanel data={metricsData} />
-          </div>
-        </section>
+            {/* Bottom: Settings & Metrics */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
+              <div className="lg:col-span-1 space-y-4">
+                <h2 className="text-xl font-semibold text-white mb-2">Defense Controls</h2>
+                <ThresholdSlider threshold={threshold} setThreshold={setThreshold} />
+                <p className="text-xs text-gray-500 italic px-1 pt-1 mb-2">💡 Hint: Drag to see how stricter thresholds trade off precision vs recall.</p>
+                <div className="bg-blue-900/10 border border-blue-900/30 p-4 rounded-xl">
+                  <p className="text-sm text-blue-200/80 leading-relaxed">
+                    Adjusting the probability threshold updates the confusion matrix live against historical data. 
+                    Higher threshold means less false positives, but potentially missing subtle frauds.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="lg:col-span-2 space-y-4">
+                <h2 className="text-xl font-semibold text-white mb-2">Financial Impact & Accuracy Simulator</h2>
+                <MetricsPanel data={metricsData} />
+              </div>
+            </section>
 
-        {/* Hypothetical Sandbox Sandbox */}
-        <section className="mb-10">
-          <WhatIfSimulator threshold={threshold} />
-        </section>
+            {/* Hypothetical Sandbox Sandbox */}
+            <section className="mb-10">
+              <WhatIfSimulator threshold={threshold} />
+            </section>
 
-        {/* Transaction Level Explainability */}
-        <section className="mb-8">
-          <TransactionLookupPanel />
-        </section>
+            {/* Transaction Level Explainability */}
+            <section className="mb-8">
+              <TransactionLookupPanel />
+            </section>
+          </>
+        )}
 
         <Footer />
       </div>
