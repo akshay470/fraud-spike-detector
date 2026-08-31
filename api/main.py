@@ -166,6 +166,17 @@ def get_explain():
             raise HTTPException(status_code=500, detail=f"Failed to read feature importance: {e}")
     raise HTTPException(status_code=404, detail="Feature importance data not found")
 
+@app.get("/drift")
+def get_drift():
+    drift_file = os.path.join("..", "model", "drift_report.json")
+    if os.path.exists(drift_file):
+        try:
+            with open(drift_file, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to read drift report: {e}")
+    raise HTTPException(status_code=404, detail="Drift data not found")
+
 @app.get("/metrics")
 def get_metrics(threshold: Optional[float] = Query(None)):
     if threshold is None:
