@@ -176,6 +176,55 @@ def get_drift():
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to read drift report: {e}")
     raise HTTPException(status_code=404, detail="Drift data not found")
+@app.get("/transaction/{tx_id}")
+def get_transaction_insights(tx_id: int):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cur.execute("SELECT * FROM test_predictions WHERE transaction_id::text = %s::text", (str(tx_id),))
+        row = cur.fetchone()
+    finally:
+        conn.close()
+        
+    if not row:
+        raise HTTPException(status_code=404, detail="Transaction not found in test predictions")
+        
+    prob = float(row["predicted_probability"])
+    actual_label = int(row.get("actual_label", 0))
+
+    if global_df is None:
+        raise HTTPException(status_code=500, detail="Dataframe not loaded in memory")
+        
+    if tx_id not in global_df.index:
+        raise HTTPException(status_code=404, detail="Transaction index out of range")
+        
+    row_data = global_df.iloc[tx_id]
+    feature_cols = [f'V{i}' for i in range(1, 29)] + ['Amount']
+    feat_vals = [float(row_data[col]) for col in feature_cols]
+    
+    top_features = []
+    if global_explainer is not None:
+        try:
+            s_vals = global_explainer.shap_values(np.array([feat_vals]))[0]
+            breakdown = []
+            for i, col in enumerate(feature_cols):
+                breakdown.append({
+                    "feature": col,
+                    "value": feat_vals[i],
+                    "shap_contribution": float(s_vals[i])
+                })
+            breakdown.sort(key=lambda x: abs(x["shap_contribution"]), reverse=True)
+            top_features = breakdown[:5]
+        except Exception as e:
+            print("SHAP failed:", e)
+
+    return {
+        "transaction_id": tx_id,
+        "predicted_probability": prob,
+        "actual_label": actual_label,
+        "predicted_label": 1 if prob >= 0.5 else 0,
+        "top_features": top_features
+    }
 
 @app.get("/metrics")
 def get_metrics(threshold: Optional[float] = Query(None)):
