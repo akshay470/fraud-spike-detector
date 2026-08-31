@@ -14,6 +14,7 @@ import psycopg2.extras
 import pandas as pd
 import numpy as np
 import linecache
+from functools import lru_cache
 
 load_dotenv()
 
@@ -178,6 +179,7 @@ def get_drift():
     raise HTTPException(status_code=404, detail="Drift data not found")
 
 @app.get("/risk-grade")
+@lru_cache(maxsize=128)
 def get_risk_grade(threshold: float = 0.5):
     try:
         # 1. Fetch metrics for recall/precision
@@ -227,6 +229,7 @@ def get_risk_grade(threshold: float = 0.5):
         raise HTTPException(status_code=500, detail=f"Failed to compute risk grade: {e}")
 
 @app.get("/transaction/{tx_id}")
+@lru_cache(maxsize=128)
 def get_transaction_insights(tx_id: int):
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -278,6 +281,7 @@ def get_transaction_insights(tx_id: int):
     }
 
 @app.get("/metrics")
+@lru_cache(maxsize=128)
 def get_metrics(threshold: Optional[float] = Query(None)):
     if threshold is None:
         metrics_file = os.path.join("..", "model", "metrics.json")
