@@ -52,7 +52,7 @@ export default function Dashboard() {
   }, [threshold]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-200 p-8 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen transparent text-gray-200 p-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header */}
