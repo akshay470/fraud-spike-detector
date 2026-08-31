@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, ShieldAlert } from "lucide-react";
 
-export default function RiskGradePanel({ threshold }: { threshold: number }) {
+export default function RiskGradePanel({ threshold, onGradeLoaded }: { threshold: number, onGradeLoaded?: (grade: string) => void }) {
   const [data, setData] = useState<any>(null);
   const [expanded, setExpanded] = useState(false);
 
@@ -11,7 +11,9 @@ export default function RiskGradePanel({ threshold }: { threshold: number }) {
         let apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888";
         const res = await fetch(`${apiUrl}/risk-grade?threshold=${threshold}`);
         if (res.ok) {
-          setData(await res.json());
+          const json = await res.json();
+          setData(json);
+          if (onGradeLoaded) onGradeLoaded(json.letter_grade);
         }
       } catch (e) {
         console.error("Failed to fetch risk grade", e);

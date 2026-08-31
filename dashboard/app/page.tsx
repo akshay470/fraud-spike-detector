@@ -23,6 +23,33 @@ export default function Dashboard() {
   const [metricsData, setMetricsData] = useState<any>(null);
   const [selectedSpike, setSelectedSpike] = useState<any>(null);
   
+  const [riskGrade, setRiskGrade] = useState<string | null>(null);
+  const [driftStatus, setDriftStatus] = useState<string | null>(null);
+  
+  let systemStatus = "ANALYZING";
+  let statusColor = "text-gray-400 bg-gray-900/40 border-gray-800";
+  let pulseColor = "bg-gray-400";
+  let showPulse = false;
+
+  if (riskGrade && driftStatus) {
+    if (riskGrade === "D") {
+      systemStatus = "CRITICAL";
+      statusColor = "text-red-400 bg-red-900/40 border-red-900/50";
+      pulseColor = "bg-red-500 animate-pulse";
+      showPulse = true;
+    } else if (riskGrade === "C" || driftStatus === "Significant Drift") {
+      systemStatus = "ELEVATED";
+      statusColor = "text-yellow-400 bg-yellow-900/40 border-yellow-900/50";
+      pulseColor = "bg-yellow-500 animate-pulse";
+      showPulse = true;
+    } else {
+      systemStatus = "SECURE";
+      statusColor = "text-emerald-400 bg-emerald-900/40 border-emerald-900/50";
+      pulseColor = "bg-emerald-500";
+      showPulse = true;
+    }
+  }
+  
   useEffect(() => {
     // Auth Check
     const storedEmail = localStorage.getItem("userEmail");
@@ -71,6 +98,11 @@ export default function Dashboard() {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
               <span className="text-emerald-500 text-sm font-medium tracking-wide">System Live</span>
+            </div>
+            
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm border ${statusColor}`}>
+              {showPulse && <span className={`h-2 w-2 rounded-full ${pulseColor}`}></span>}
+              SYSTEM STATUS: {systemStatus}
             </div>
             
             {userEmail && (
@@ -128,7 +160,7 @@ export default function Dashboard() {
         {/* Impact Summary Hero (Derived from Metrics) */}
         {metricsData && (
           <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <RiskGradePanel threshold={threshold} />
+            <RiskGradePanel threshold={threshold} onGradeLoaded={setRiskGrade} />
             <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col items-center justify-center text-center">
               <div className="text-4xl font-extrabold text-white mb-2">
                 {metricsData.confusion_matrix[0].toLocaleString()}
@@ -167,7 +199,7 @@ export default function Dashboard() {
         {/* Feature Row: Explainability, Drift, and Auto Simulation */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ExplainabilityPanel />
-          <DriftPanel />
+          <DriftPanel onDriftLoaded={setDriftStatus} />
           <AutomatedSimulationPanel spike={selectedSpike} />
         </section>
 

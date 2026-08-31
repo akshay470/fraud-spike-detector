@@ -14,7 +14,7 @@ interface DriftReport {
   features: DriftFeature[];
 }
 
-export default function DriftPanel() {
+export default function DriftPanel({ onDriftLoaded }: { onDriftLoaded?: (status: string) => void }) {
   const [data, setData] = useState<DriftReport | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +29,7 @@ export default function DriftPanel() {
         // Sort features by PSI descending
         json.features.sort((a: DriftFeature, b: DriftFeature) => b.psi - a.psi);
         setData(json);
+        if (onDriftLoaded) onDriftLoaded(json.overall_status);
       } catch (err: any) {
         setError(err.message);
       }
