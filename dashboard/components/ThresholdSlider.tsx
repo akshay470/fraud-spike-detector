@@ -25,6 +25,14 @@ export default function ThresholdSlider({ threshold, setThreshold }: { threshold
         <span>0.1 (Catch All)</span>
         <span>0.9 (Strict)</span>
       </div>
+
+      <div className="mt-5 p-3 bg-gray-800/40 rounded-lg border border-gray-700/50">
+        <p className="text-xs leading-relaxed text-gray-400">
+          <span className="font-semibold text-gray-300 block mb-1">Tuning Impact:</span>
+          Lower threshold = catches more fraud but increases false positives and analyst workload. <br />
+          Higher threshold = fewer false alarms but risks missing subtle fraud.
+        </p>
+      </div>
     </div>
   );
 }
