@@ -53,6 +53,32 @@ export default function Footer() {
         <TechBadge name="TailwindCSS" />
       </div>
 
+      {/* 2.5 Security & Compliance */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+        <h4 className="flex items-center gap-2 text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          <ShieldCheck size={14} className="text-gray-500" />
+          Security & Compliance Considerations
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Data Privacy</span>
+            <span className="text-gray-500 text-xs">Dataset is fully PCA-anonymized. Transaction PII is naturally tokenized.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Encryption</span>
+            <span className="text-gray-500 text-xs">Production architecture assumes TLS in transit and AES-256 at rest.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Access Control</span>
+            <span className="text-gray-500 text-xs">Strict simulated RBAC. Tuning limits locked to authorized risk officers.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Audit & Explainability</span>
+            <span className="text-gray-500 text-xs">Granular SHAP metrics ensure seamless regulatory "Right to Explanation."</span>
+          </div>
+        </div>
+      </div>
+
       {/* 3. Closing Line */}
       <div className="flex flex-col items-center justify-center gap-2 mt-4 text-center">
         <p className="text-gray-500 text-sm font-medium">
