@@ -293,18 +293,26 @@ def get_metrics(threshold: Optional[float] = Query(None)):
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute("SELECT actual_label, predicted_probability FROM test_predictions")
+            cur.execute("SELECT actual_label, predicted_probability, amount FROM test_predictions")
             rows = cur.fetchall()
 
         tp, fp, tn, fn = 0, 0, 0, 0
+        total_fraud_attempted_value = 0.0
+        fraud_detected_value = 0.0
+
         for row in rows:
             actual = int(row["actual_label"])
             prob = float(row["predicted_probability"])
+            amt = float(row["amount"]) if row["amount"] is not None else 0.0
             
             predicted = 1 if prob >= threshold else 0
             
+            if actual == 1:
+                total_fraud_attempted_value += amt
+            
             if actual == 1 and predicted == 1:
                 tp += 1
+                fraud_detected_value += amt
             elif actual == 0 and predicted == 1:
                 fp += 1
             elif actual == 0 and predicted == 0:
@@ -313,6 +321,8 @@ def get_metrics(threshold: Optional[float] = Query(None)):
                 fn += 1
 
         total_cost = (fp * 50) + (fn * 5000)
+        false_positive_cost = fp * 50
+        net_savings = fraud_detected_value - false_positive_cost
 
         precision = 0.0
         if (tp + fp) > 0:
@@ -332,7 +342,13 @@ def get_metrics(threshold: Optional[float] = Query(None)):
             "f1": f1,
             "total_cost": total_cost,
             "confusion_matrix": [tp, fp, tn, fn],
-            "optimal_threshold": threshold
+            "optimal_threshold": threshold,
+            "financials": {
+                "total_fraud_attempted": total_fraud_attempted_value,
+                "fraud_detected": fraud_detected_value,
+                "false_positive_cost": false_positive_cost,
+                "net_savings": net_savings
+            }
         }
     finally:
         conn.close()

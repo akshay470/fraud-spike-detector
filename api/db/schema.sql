@@ -18,11 +18,12 @@ CREATE TABLE IF NOT EXISTS test_predictions (
     transaction_id VARCHAR(255) PRIMARY KEY,
     timestamp BIGINT,
     actual_label INT,
-    predicted_probability FLOAT
+    predicted_probability FLOAT,
+    amount FLOAT
 );
 
 -- Load the test predictions data
-COPY test_predictions (transaction_id, timestamp, actual_label, predicted_probability)
+COPY test_predictions (transaction_id, timestamp, actual_label, predicted_probability, amount)
 FROM '/data/test_predictions.csv'
 DELIMITER ','
 CSV HEADER;

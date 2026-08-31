@@ -136,9 +136,9 @@ export default function Dashboard() {
             </div>
             <div className="bg-gradient-to-br from-emerald-900/40 to-gray-900 p-6 rounded-2xl border border-emerald-900/50 shadow-xl flex flex-col items-center justify-center text-center ring-1 ring-emerald-500/20">
               <div className="text-4xl font-extrabold text-emerald-400 mb-2">
-                ₹{(metricsData.confusion_matrix[0] * 122).toLocaleString()}
+                ${(metricsData.financials?.net_savings || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
               </div>
-              <div className="text-xs text-emerald-500/80 uppercase tracking-wider font-bold">Estimated Loss Prevented</div>
+              <div className="text-xs text-emerald-500/80 uppercase tracking-wider font-bold">Realized Net Savings</div>
             </div>
             <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col items-center justify-center text-center">
               <div className="text-4xl font-extrabold text-blue-400 mb-2">
@@ -185,7 +185,7 @@ export default function Dashboard() {
           </div>
           
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold text-white mb-2">Cost & Accuracy Simulator</h2>
+            <h2 className="text-xl font-semibold text-white mb-2">Financial Impact & Accuracy Simulator</h2>
             <MetricsPanel data={metricsData} />
           </div>
         </section>

@@ -8,6 +8,12 @@ interface MetricsData {
   total_cost: number;
   confusion_matrix: number[];
   optimal_threshold: number;
+  financials?: {
+    total_fraud_attempted: number;
+    fraud_detected: number;
+    false_positive_cost: number;
+    net_savings: number;
+  };
 }
 
 export default function MetricsPanel({ data }: { data: MetricsData | null }) {
@@ -15,14 +21,18 @@ export default function MetricsPanel({ data }: { data: MetricsData | null }) {
 
   const [tp, fp, tn, fn] = data.confusion_matrix;
 
-  const StatCard = ({ title, value, icon, sub }: any) => (
+  const formatCurrency = (val: number) => {
+    return `$${val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  };
+
+  const StatCard = ({ title, value, icon, sub, highlightClass = "text-gray-100" }: any) => (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 shadow-lg flex flex-col justify-between">
       <div className="flex justify-between items-start mb-2">
         <span className="text-gray-400 text-sm font-medium">{title}</span>
         <div className="text-gray-500">{icon}</div>
       </div>
       <div>
-        <div className="text-2xl font-bold text-gray-100">{value}</div>
+        <div className={`text-2xl font-bold ${highlightClass}`}>{value}</div>
         {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
       </div>
     </div>
@@ -33,28 +43,32 @@ export default function MetricsPanel({ data }: { data: MetricsData | null }) {
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard 
-          title="Precision" 
-          value={`${(data.precision * 100).toFixed(2)}%`}
+          title="Total Attempted" 
+          value={formatCurrency(data.financials?.total_fraud_attempted || 0)}
+          icon={<Banknote size={18} />}
+          sub="All positive actual labels"
+          highlightClass="text-red-500"
+        />
+        <StatCard 
+          title="Fraud Prevented" 
+          value={formatCurrency(data.financials?.fraud_detected || 0)}
           icon={<ShieldAlert size={18} />}
-          sub="TP / (TP + FP)"
+          sub="True Positives"
+          highlightClass="text-white"
         />
         <StatCard 
-          title="Recall" 
-          value={`${(data.recall * 100).toFixed(2)}%`}
-          icon={<Fingerprint size={18} />}
-          sub="TP / (TP + FN)"
-        />
-        <StatCard 
-          title="F1 Score" 
-          value={`${(data.f1 * 100).toFixed(2)}%`}
+          title="FP Penalty" 
+          value={formatCurrency(data.financials?.false_positive_cost || 0)}
           icon={<Activity size={18} />}
-          sub="Harmonic Mean"
+          sub="False Positives × $50"
+          highlightClass="text-orange-400"
         />
         <StatCard 
-          title="Total Cost" 
-          value={`$${data.total_cost.toLocaleString()}`}
-          icon={<Banknote size={18} className="text-red-400" />}
-          sub="FP=50, FN=5000"
+          title="Net Savings" 
+          value={formatCurrency(data.financials?.net_savings || 0)}
+          icon={<Banknote size={18} />}
+          sub="Prevented - FP Penalty"
+          highlightClass="text-emerald-400"
         />
       </div>
 
