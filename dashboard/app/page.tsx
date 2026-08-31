@@ -12,6 +12,7 @@ import RiskGradePanel from "@/components/RiskGradePanel";
 import FraudTrendsChart from "@/components/FraudTrendsChart";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
 import Footer from "@/components/Footer";
+import PresentationOverlay from "@/components/PresentationOverlay";
 
 import { useRouter } from "next/navigation";
 import { LogOut, Search } from "lucide-react";
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [metricsData, setMetricsData] = useState<any>(null);
   const [selectedSpike, setSelectedSpike] = useState<any>(null);
   const [viewMode, setViewMode] = useState<"Executive" | "Analyst">("Executive");
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
   
   const [riskGrade, setRiskGrade] = useState<string | null>(null);
   const [driftStatus, setDriftStatus] = useState<string | null>(null);
@@ -100,6 +102,14 @@ export default function Dashboard() {
               </span>
               <span className="text-emerald-500 text-sm font-medium tracking-wide">System Live</span>
             </div>
+            
+            <button 
+              onClick={() => setIsPresentationMode(true)}
+              className="bg-indigo-900/40 hover:bg-indigo-900/60 transition-colors text-indigo-400 border border-indigo-900/50 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-1.5"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+              Presentation Mode
+            </button>
             
             <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm border ${statusColor}`}>
               {showPulse && <span className={`h-2 w-2 rounded-full ${pulseColor}`}></span>}
@@ -259,6 +269,10 @@ export default function Dashboard() {
 
         <Footer />
       </div>
+      
+      {isPresentationMode && (
+        <PresentationOverlay onClose={() => setIsPresentationMode(false)} />
+      )}
     </div>
   );
 }

@@ -273,7 +273,8 @@ def get_transaction_insights(tx_id: int):
         "predicted_probability": prob,
         "actual_label": actual_label,
         "predicted_label": 1 if prob >= 0.5 else 0,
-        "top_features": top_features
+        "top_features": top_features,
+        "amount": float(row.get("amount", 0.0))
     }
 
 @app.get("/metrics")
