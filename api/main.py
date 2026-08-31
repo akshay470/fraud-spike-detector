@@ -155,6 +155,17 @@ def get_spikes():
     finally:
         conn.close()
 
+@app.get("/explain")
+def get_explain():
+    importance_file = os.path.join("..", "model", "feature_importance.json")
+    if os.path.exists(importance_file):
+        try:
+            with open(importance_file, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to read feature importance: {e}")
+    raise HTTPException(status_code=404, detail="Feature importance data not found")
+
 @app.get("/metrics")
 def get_metrics(threshold: Optional[float] = Query(None)):
     if threshold is None:
