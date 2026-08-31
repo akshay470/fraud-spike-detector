@@ -10,6 +10,7 @@ import DriftPanel from "@/components/DriftPanel";
 import TransactionLookupPanel from "@/components/TransactionLookupPanel";
 import RiskGradePanel from "@/components/RiskGradePanel";
 import FraudTrendsChart from "@/components/FraudTrendsChart";
+import WhatIfSimulator from "@/components/WhatIfSimulator";
 import Footer from "@/components/Footer";
 
 import { useRouter } from "next/navigation";
@@ -188,6 +189,11 @@ export default function Dashboard() {
             <h2 className="text-xl font-semibold text-white mb-2">Financial Impact & Accuracy Simulator</h2>
             <MetricsPanel data={metricsData} />
           </div>
+        </section>
+
+        {/* Hypothetical Sandbox Sandbox */}
+        <section className="mb-10">
+          <WhatIfSimulator threshold={threshold} />
         </section>
 
         {/* Transaction Level Explainability */}

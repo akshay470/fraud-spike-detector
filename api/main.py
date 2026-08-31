@@ -384,3 +384,95 @@ def get_hourly_trends(threshold: float = 0.5):
         raise HTTPException(status_code=500, detail=f"Failed to fetch hourly trends: {e}")
     finally:
         conn.close()
+
+class WhatIfRequest(BaseModel):
+    amount: float
+    v14: float
+    v4: float
+    v12: float
+    v8: float
+    threshold: float = 0.5
+
+@app.post("/whatif")
+def post_whatif(req: WhatIfRequest):
+    if not has_model or global_explainer is None:
+        raise HTTPException(status_code=503, detail="Model or SHAP explainer not loaded")
+        
+    # Baseline medians derived directly from the dataset
+    baseline_medians = {
+    "V1": 0.0181087991615309,
+    "V2": 0.0654855563960555,
+    "V3": 0.179846343563544,
+    "V4": -0.0198465294811989,
+    "V5": -0.0543358267364858,
+    "V6": -0.274187076506651,
+    "V7": 0.0401030827945351,
+    "V8": 0.0223580364366631,
+    "V9": -0.051428731550349,
+    "V10": -0.0929173835961975,
+    "V11": -0.032757354499007,
+    "V12": 0.140032588291332,
+    "V13": -0.0135680567852071,
+    "V14": 0.0506013193100486,
+    "V15": 0.0480715497626106,
+    "V16": 0.0664133205843014,
+    "V17": -0.0656757538072252,
+    "V18": -0.0036363123546992,
+    "V19": 0.0037348229952574,
+    "V20": -0.0624810924603664,
+    "V21": -0.0294501676953819,
+    "V22": 0.0067819425282695,
+    "V23": -0.0111929302967212,
+    "V24": 0.0409760560572798,
+    "V25": 0.0165935016367397,
+    "V26": -0.0521391080182019,
+    "V27": 0.0013421459786502,
+    "V28": 0.011243831564982,
+    "Amount": 22.0
+}
+    
+    # Construct input vector in standard model feature order (V1-V28, Amount)
+    input_vector = baseline_medians.copy()
+    input_vector["Amount"] = req.amount
+    input_vector["V14"] = req.v14
+    input_vector["V4"] = req.v4
+    input_vector["V12"] = req.v12
+    input_vector["V8"] = req.v8
+    
+    feature_order = ["V" + str(i) for i in range(1, 29)] + ["Amount"]
+    
+    import pandas as pd
+    df_predict = pd.DataFrame([input_vector], columns=feature_order)
+    
+    try:
+        # 1. Predict
+        prob_arr = model.predict_proba(df_predict)
+        prob = float(prob_arr[0][1])
+        
+        # 2. SHAP
+        shap_values = global_explainer.shap_values(df_predict)[0]
+        
+        # Zip features with shap contributions
+        feature_contributions = []
+        for i, f_name in enumerate(feature_order):
+            if f_name in ["Amount", "V14", "V4", "V12", "V8"]:
+                feature_contributions.append({
+                    "feature": f_name,
+                    "value": float(df_predict[f_name].iloc[0]),
+                    "contribution": float(shap_values[i])
+                })
+        
+        # Sort based on absolute impact
+        feature_contributions.sort(key=lambda x: abs(x["contribution"]), reverse=True)
+        
+        verdict = "FLAGGED" if prob >= req.threshold else "CLEAR"
+        
+        return {
+            "probability": prob,
+            "verdict": verdict,
+            "top_factors": feature_contributions
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
