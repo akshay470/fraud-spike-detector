@@ -13,6 +13,7 @@ import FraudTrendsChart from "@/components/FraudTrendsChart";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
 import Footer from "@/components/Footer";
 import PresentationOverlay from "@/components/PresentationOverlay";
+import AttackPatternSimulatorOverlay from "@/components/AttackPatternSimulatorOverlay";
 
 import { useRouter } from "next/navigation";
 import { LogOut, Search } from "lucide-react";
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const [selectedSpike, setSelectedSpike] = useState<any>(null);
   const [viewMode, setViewMode] = useState<"Executive" | "Analyst">("Executive");
   const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [isSimulationMode, setIsSimulationMode] = useState(false);
   
   const [riskGrade, setRiskGrade] = useState<string | null>(null);
   const [driftStatus, setDriftStatus] = useState<string | null>(null);
@@ -85,74 +87,96 @@ export default function Dashboard() {
     <div className="min-h-screen bg-transparent text-gray-200 p-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* Header */}
-        <header className="flex items-center justify-between border-b border-gray-800 pb-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">AI Risk Manager</h1>
-            <p className="text-gray-500 mt-1">Live Fraud-Spike Detector & Cost Analysis</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="bg-emerald-900/40 text-emerald-400 border border-emerald-900/50 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm">
-              Defense-Only System
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-              </span>
-              <span className="text-emerald-500 text-sm font-medium tracking-wide">System Live</span>
+        {/* Header containing Identity & Controls */}
+        <header className="flex flex-col border-b border-gray-800 pb-4 mb-4 gap-4">
+          
+          {/* Row 1: Main Header (Identity & Status) */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">AI Risk Manager</h1>
+              <p className="text-gray-500 mt-1">Live Fraud-Spike Detector & Cost Analysis</p>
             </div>
             
-            <button 
-              onClick={() => setIsPresentationMode(true)}
-              className="bg-indigo-900/40 hover:bg-indigo-900/60 transition-colors text-indigo-400 border border-indigo-900/50 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-1.5"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-              Presentation Mode
-            </button>
-            
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm border ${statusColor}`}>
-              {showPulse && <span className={`h-2 w-2 rounded-full ${pulseColor}`}></span>}
-              SYSTEM STATUS: {systemStatus}
-            </div>
-            
-            {userEmail && (
-              <div className="flex items-center gap-4 ml-4 pl-4 border-l border-gray-800">
-                <div className="flex bg-gray-900 border border-gray-800 rounded-lg overflow-hidden p-1">
+            <div className="flex items-center gap-4">
+              <div className="bg-emerald-900/40 text-emerald-400 border border-emerald-900/50 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                Defense-Only System
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                <span className="text-emerald-500 text-sm font-medium tracking-wide">System Live</span>
+              </div>
+              
+              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm border ${statusColor}`}>
+                {showPulse && <span className={`h-2 w-2 rounded-full ${pulseColor}`}></span>}
+                SYSTEM STATUS: {systemStatus}
+              </div>
+
+              {userEmail && (
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-gray-800">
+                  <span className="text-sm text-gray-400">
+                    Signed in as: <span className="text-gray-200 font-medium">{userEmail}</span>
+                  </span>
                   <button 
-                    onClick={() => setViewMode("Executive")}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
-                      viewMode === "Executive" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
-                    }`}
+                    onClick={() => {
+                      localStorage.removeItem("userEmail");
+                      router.push("/signin");
+                    }}
+                    className="flex items-center gap-1.5 text-xs bg-gray-900 border border-gray-700 hover:bg-gray-800 text-gray-300 px-3 py-1.5 rounded-lg transition-colors"
                   >
-                    Executive
-                  </button>
-                  <button 
-                    onClick={() => setViewMode("Analyst")}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
-                      viewMode === "Analyst" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
-                    }`}
-                  >
-                    Analyst
+                    <LogOut size={14} />
+                    Sign Out
                   </button>
                 </div>
-                
-                <span className="text-sm text-gray-400 ml-2 border-l border-gray-800 pl-4">
-                  Signed in as: <span className="text-gray-200 font-medium">{userEmail}</span>
-                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Separator */}
+          <div className="h-px w-full bg-gray-800/50"></div>
+
+          {/* Row 2: Secondary Toolbar (Controls & Modes) */}
+          <div className="flex items-center justify-between py-2">
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">Workspace View:</span>
+              <div className="flex bg-gray-900 border border-gray-800 rounded-lg overflow-hidden p-1 shadow-inner">
                 <button 
-                  onClick={() => {
-                    localStorage.removeItem("userEmail");
-                    router.push("/signin");
-                  }}
-                  className="flex items-center gap-1.5 text-xs bg-gray-900 border border-gray-700 hover:bg-gray-800 text-gray-300 px-3 py-1.5 rounded-lg transition-colors"
+                  onClick={() => setViewMode("Executive")}
+                  className={`px-5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    viewMode === "Executive" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                  }`}
                 >
-                  <LogOut size={14} />
-                  Sign Out
+                  Executive
+                </button>
+                <button 
+                  onClick={() => setViewMode("Analyst")}
+                  className={`px-5 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    viewMode === "Analyst" ? "bg-gray-700 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                  }`}
+                >
+                  Analyst
                 </button>
               </div>
-            )}
+            </div>
             
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsPresentationMode(true)}
+                className="bg-indigo-900/40 hover:bg-indigo-900/60 transition-colors text-indigo-400 border border-indigo-900/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-2"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+                Presentation Mode
+              </button>
+              <button 
+                onClick={() => setIsSimulationMode(true)}
+                className="bg-amber-900/40 hover:bg-amber-900/60 transition-colors text-amber-400 border border-amber-900/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-2"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                SIMULATION MODE: Attack Patterns
+              </button>
+            </div>
           </div>
         </header>
 
@@ -272,6 +296,9 @@ export default function Dashboard() {
       
       {isPresentationMode && (
         <PresentationOverlay onClose={() => setIsPresentationMode(false)} />
+      )}
+      {isSimulationMode && (
+        <AttackPatternSimulatorOverlay onClose={() => setIsSimulationMode(false)} />
       )}
     </div>
   );
