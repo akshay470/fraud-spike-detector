@@ -131,8 +131,8 @@ npm run dev
 ---
 
 ## Live Demo Links
-- **Client Terminal**: [Vercel Deployment URL Pending]
-- **API Core**: [Render Deployment URL Pending]
+- **Client Terminal**: https://fraud-spike-detector.vercel.app
+- **API Core**: (https://fraud-spike-detector-f7us.onrender.com/metrics)
 
 ---
 
