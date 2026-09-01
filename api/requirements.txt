@@ -5,3 +5,5 @@ xgboost
 pandas
 python-dotenv
 pydantic
+shap
+scikit-learn
