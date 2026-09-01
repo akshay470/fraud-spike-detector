@@ -48,13 +48,19 @@ try:
     if has_model:
         global_explainer = shap.TreeExplainer(model.get_booster())
         
-    print("Caching dataframe for exact index mapping...")
-    raw_df = pd.read_csv("../data/creditcard.csv")
-    global_df = raw_df.sort_values('Time').reset_index(drop=True)
-    print("Dataframe cached.")
+    print("Caching dataframe SHAP subsets for exact index mapping...")
+    
+    # Securely fallback exclusively to the tightly compressed Test Subset committed to Git 
+    subset_path = os.path.join("..", "model", "test_features.csv")
+    if os.path.exists(subset_path):
+        test_features_csv = pd.read_csv(subset_path)
+        global_df = test_features_csv.set_index("OriginalIndex")
+        print("Dataframe subset cached natively.")
+    else:
+        print(f"Error: Required subset vectors not found at {subset_path}. Hard-fail enabled for SHAP endpoint.")
+        
 except Exception as e:
     print(f"Warning: Could not load SHAP or cache data: {e}")
-
 def get_db_connection():
     db_url = os.getenv("DATABASE_URL")
     if not db_url:
@@ -246,27 +252,11 @@ def get_transaction_insights(tx_id: int):
     actual_label = int(row.get("actual_label", 0))
 
     if global_df is None or tx_id not in global_df.index:
-        # FALLBACK: If dataset isn't loaded (e.g. on Render server), return mock SHAP directly
-        print(f"Warning: Dataset missing. Generating mock SHAP for tx {tx_id}")
-        fake_features = []
-        import random
-        for col in [f'V{i}' for i in range(1, 29)] + ['Amount']:
-            fake_features.append({
-                "feature": col,
-                "value": random.uniform(-2.0, 2.0),
-                "shap_contribution": random.uniform(0.1, 1.5) if prob >= 0.5 else random.uniform(-0.5, 0.5)
-            })
-        fake_features.sort(key=lambda x: abs(x["shap_contribution"]), reverse=True)
-        return {
-            "transaction_id": tx_id,
-            "predicted_probability": prob,
-            "actual_label": actual_label,
-            "predicted_label": 1 if prob >= 0.5 else 0,
-            "top_features": fake_features[:5],
-            "amount": float(row.get("amount", 0.0))
-        }
+        # STRICT COMPLIANCE: Hard-fail instead of returning fake data. 
+        raise HTTPException(status_code=503, detail="Service Unavailable: Genuine SHAP execution vectors temporarily unavailable in production layer.")
         
-    row_data = global_df.iloc[tx_id]
+    # `tx_id` is the original index, so we use .loc instead of .iloc for the reduced subset matrix
+    row_data = global_df.loc[tx_id]
     feature_cols = [f'V{i}' for i in range(1, 29)] + ['Amount']
     feat_vals = [float(row_data[col]) for col in feature_cols]
     
