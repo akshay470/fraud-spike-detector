@@ -188,3 +188,12 @@ It highlights how the platform moves beyond simply detecting fraud toward intell
 The section brings together explainable AI, investigation, simulation, response, and business impact in one concise view.
 
 ![Why AI Risk Manager](dashboard_preview_final.png)
+
+## AI Decision
+
+The AI Decision layer provides a concise final risk assessment inside the Transaction Inspector.
+It summarizes the transaction’s fraud probability, risk level, confidence, and key risk signals.
+It also presents the recommended response, helping analysts move from detection to an actionable decision.
+The feature keeps the investigation workflow compact while making the AI’s recommendation immediately visible.
+
+![AI Decision](docs/screenshots/lookup.png)
