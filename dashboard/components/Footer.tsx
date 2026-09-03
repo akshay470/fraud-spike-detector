@@ -7,7 +7,33 @@ export default function Footer() {
   return (
     <footer className="mt-16 pt-8 border-t border-gray-800 flex flex-col gap-8 w-full pb-8">
       
-      {/* 1. How It Works - Compact horizontal flow */}
+      {/* 1. Security & Compliance */}
+      <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+        <h4 className="flex items-center gap-2 text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          <ShieldCheck size={14} className="text-gray-500" />
+          Security & Compliance Considerations
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Data Privacy</span>
+            <span className="text-gray-500 text-xs">Dataset is fully PCA-anonymized. Transaction PII is naturally tokenized.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Encryption</span>
+            <span className="text-gray-500 text-xs">Production architecture assumes TLS in transit and AES-256 at rest.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Access Control</span>
+            <span className="text-gray-500 text-xs">Strict simulated RBAC. Tuning limits locked to authorized risk officers.</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-gray-200 text-sm font-medium">Audit & Explainability</span>
+            <span className="text-gray-500 text-xs">Granular SHAP metrics ensure seamless regulatory "Right to Explanation."</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. How It Works - Compact horizontal flow */}
       <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
         <h4 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">How It Works</h4>
         
@@ -42,7 +68,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 2. Tech Stack */}
+      {/* 3. Tech Stack */}
       <div className="flex flex-wrap items-center justify-center gap-3">
         <h4 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mr-2">Built With</h4>
         <TechBadge name="XGBoost" />
@@ -51,32 +77,6 @@ export default function Footer() {
         <TechBadge name="Next.js" />
         <TechBadge name="Recharts" />
         <TechBadge name="TailwindCSS" />
-      </div>
-
-      {/* 2.5 Security & Compliance */}
-      <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
-        <h4 className="flex items-center gap-2 text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">
-          <ShieldCheck size={14} className="text-gray-500" />
-          Security & Compliance Considerations
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
-          <div className="flex flex-col gap-1">
-            <span className="text-gray-200 text-sm font-medium">Data Privacy</span>
-            <span className="text-gray-500 text-xs">Dataset is fully PCA-anonymized. Transaction PII is naturally tokenized.</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-gray-200 text-sm font-medium">Encryption</span>
-            <span className="text-gray-500 text-xs">Production architecture assumes TLS in transit and AES-256 at rest.</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-gray-200 text-sm font-medium">Access Control</span>
-            <span className="text-gray-500 text-xs">Strict simulated RBAC. Tuning limits locked to authorized risk officers.</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-gray-200 text-sm font-medium">Audit & Explainability</span>
-            <span className="text-gray-500 text-xs">Granular SHAP metrics ensure seamless regulatory "Right to Explanation."</span>
-          </div>
-        </div>
       </div>
 
       {/* 3. Closing Line */}
