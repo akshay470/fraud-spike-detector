@@ -11,7 +11,8 @@ export default function FraudTrendsChart({ threshold }: { threshold: number }) {
     const fetchTrends = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8888/trends/hourly?threshold=${threshold}`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888";
+        const res = await fetch(`${apiUrl}/trends/hourly?threshold=${threshold}`);
         if (!res.ok) throw new Error("Failed to fetch trends");
         const json = await res.json();
         
