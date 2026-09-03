@@ -179,3 +179,12 @@ npm run dev
 ### 10. Risk Sandbox (What-If Simulator)
 ![What-If Simulator](docs/screenshots/whatif.png)
 *An enclosed utility matrix enabling security analysts to hypothesize custom payloads and measure model reactions dynamically.*
+
+## Why AI Risk Manager?
+
+The compact expandable section summarizes the complete AI Risk Manager journey:
+**DETECT → EXPLAIN → INVESTIGATE → CONNECT → SIMULATE → RESPOND → MEASURE**.
+It highlights how the platform moves beyond simply detecting fraud toward intelligent prevention.
+The section brings together explainable AI, investigation, simulation, response, and business impact in one concise view.
+
+![Why AI Risk Manager](dashboard_preview_final.png)
