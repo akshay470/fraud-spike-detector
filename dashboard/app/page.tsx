@@ -12,6 +12,7 @@ import RiskGradePanel from "@/components/RiskGradePanel";
 import FraudTrendsChart from "@/components/FraudTrendsChart";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
 import Footer from "@/components/Footer";
+import WhyRiskManager from "@/components/WhyRiskManager";
 import PresentationOverlay from "@/components/PresentationOverlay";
 import AttackPatternSimulatorOverlay from "@/components/AttackPatternSimulatorOverlay";
 
@@ -163,6 +164,15 @@ export default function Dashboard() {
             
             <div className="flex items-center gap-3">
               <button 
+                onClick={() => {
+                  const el = document.getElementById("why-ai-risk-manager");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="text-xs text-gray-400 hover:text-white transition-colors mr-2 underline underline-offset-4 decoration-gray-800"
+              >
+                Why It Matters
+              </button>
+              <button 
                 onClick={() => setIsPresentationMode(true)}
                 className="bg-indigo-900/40 hover:bg-indigo-900/60 transition-colors text-indigo-400 border border-indigo-900/50 px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm flex items-center gap-2"
               >
@@ -291,6 +301,7 @@ export default function Dashboard() {
           </>
         )}
 
+        <WhyRiskManager />
         <Footer />
       </div>
       
