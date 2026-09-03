@@ -22,6 +22,7 @@ export default function TransactionLookupPanel() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<TransactionInsights | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showDecision, setShowDecision] = useState(false);
 
   const handleLookup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +41,11 @@ export default function TransactionLookupPanel() {
       }
       const json = await res.json();
       setData(json);
+      
+      // Trigger slide-in transition
+      setShowDecision(false);
+      setTimeout(() => setShowDecision(true), 50);
+
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -170,6 +176,64 @@ export default function TransactionLookupPanel() {
             <p className="text-xs text-gray-500 mt-6 pt-4 border-t border-gray-800">
               * Bars pointing right (Red) increase the probability of fraud. Bars pointing left (Green) decrease the probability. Values are localized SHAP unit distributions isolated to this specific transaction.
             </p>
+          </div>
+          
+          {/* AI Decision Panel */}
+          <div 
+            className={`lg:col-span-12 mt-2 transition-all duration-700 ease-out ${showDecision ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+          >
+            <div className="bg-gray-950/60 border border-gray-800 rounded-xl overflow-hidden relative group transition-all hover:border-gray-700">
+              <div className={`absolute top-0 left-0 right-0 h-[2px] ${data.predicted_label === 1 ? 'bg-gradient-to-r from-red-600 via-orange-500 to-red-600' : 'bg-gradient-to-r from-emerald-600 via-green-500 to-emerald-600'}`}></div>
+              
+              <div className="flex flex-col md:flex-row md:items-center justify-between p-4 md:px-6 md:py-4 gap-4">
+                
+                <div className="flex flex-col min-w-[200px]">
+                   <span className="text-[11px] font-bold tracking-[0.2em] text-gray-200 mb-1">AI DECISION</span>
+                   <span className="text-[9px] uppercase tracking-widest bg-gray-900 border border-gray-800 px-2 py-0.5 rounded-full w-max text-gray-500">Simulation Mode</span>
+                </div>
+
+                <div className="flex flex-wrap md:flex-nowrap gap-x-8 gap-y-4 md:gap-12 flex-1 md:justify-end">
+                  
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest mb-1.5">Risk</span>
+                    <div className="flex items-center gap-2">
+                       {data.predicted_label === 1 ? (
+                         <span className="relative flex h-2 w-2">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                         </span>
+                       ) : (
+                         <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                       )}
+                       <span className={`text-sm font-semibold font-mono tracking-wide ${data.predicted_label === 1 ? 'text-red-400' : 'text-emerald-400'}`}>
+                         {data.predicted_label === 1 ? 'HIGH RISK' : 'LOW RISK'}
+                       </span>
+                       <span className="text-gray-400 text-xs font-mono ml-1">· {(data.predicted_probability * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest mb-1.5">Recommended Action</span>
+                    <span className={`text-sm font-semibold tracking-wider ${data.predicted_label === 1 ? 'text-white underline decoration-red-500 decoration-2 underline-offset-4' : 'text-white'}`}>
+                      {data.predicted_label === 1 ? 'BLOCK TRANSACTION' : 'APPROVE TRANSACTION'}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col font-mono">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-sans mb-1.5">Confidence</span>
+                    <span className="text-sm text-gray-300 font-semibold">
+                      {data.predicted_probability > 0.85 || data.predicted_probability < 0.15 ? 'HIGH' : (data.predicted_probability > 0.65 || data.predicted_probability < 0.35 ? 'MEDIUM' : 'LOW')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col font-mono">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-sans mb-1.5">Signals</span>
+                    <span className="text-sm text-gray-300 font-semibold">{data.top_features.length} DETECTED</span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
           </div>
           
         </div>
