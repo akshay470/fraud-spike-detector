@@ -19,6 +19,7 @@ data/
 !model/test_predictions.csv
 *.png
 !dashboard_preview.png
+!dashboard_preview_final.png
 !docs/screenshots/*.png
 !model/*.png
 *.jpg
